@@ -55,7 +55,7 @@ export default {
       opacity: 0, 
       duration: 1.5, 
       ease: "power2.out", 
-      delay: 0.2 
+      delay: 0.5 
     });
 
     gsap.from(".menu-container", { 

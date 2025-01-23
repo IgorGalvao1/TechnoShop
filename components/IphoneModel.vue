@@ -12,7 +12,7 @@ import { markRaw } from "vue";
 import Stats from "stats.js";
 
 export default {
-  name: "MacbookModel",
+  name: "IphoneModel",
   data() {
     return {
       model: null,
@@ -23,12 +23,11 @@ export default {
       controls: null,
       hdrTexture: null, // Para guardar referência do HDR
       stats: null,
+      isSceneReady: false, // Adicionado para evitar múltiplas execuções
     };
   },
   mounted() {
     this.initScene();
-    // this.initStats();
-    this.loadModel();
     window.addEventListener("resize", this.onWindowResize);
   },
   beforeUnmount() {
@@ -62,27 +61,32 @@ export default {
       this.controls = new OrbitControls(this.camera, this.renderer.domElement);
       this.controls.enableDamping = true;
 
+      // Adiciona luz ambiente como fallback
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Luz ambiente
+      this.scene.add(ambientLight);
+
       // Carrega HDR (Environment Map)
       const rgbeLoader = new RGBELoader();
-      rgbeLoader.load("/textures/blocky_photo_studio_1k.hdr", (texture) => {
-        texture.mapping = THREE.EquirectangularReflectionMapping;
-        this.scene.environment = texture;
-        this.scene.background = texture; // Caso queira fundo HDR
-        this.hdrTexture = texture;
-      });
+      rgbeLoader.load(
+        "/textures/blocky_photo_studio_1k.hdr",
+        (texture) => {
+          texture.mapping = THREE.EquirectangularReflectionMapping;
+          this.scene.environment = texture;
+          this.scene.background = texture; // Caso queira fundo HDR
+          this.hdrTexture = texture;
 
-      // Inicia loop de animação
-      this.animate();
-    },
-
-    initStats() {
-      // Inicializa o Stats.js
-      this.stats = new Stats();
-      this.stats.showPanel(0); // 0: FPS, 1: MS, 2: MB
-      document.body.appendChild(this.stats.dom); // Adiciona o painel ao DOM
+          // Só inicia o modelo e animação depois que o HDR estiver carregado
+          this.loadModel();
+          this.animate();
+        },
+        undefined,
+        (error) => console.error("Erro ao carregar o HDR:", error)
+      );
     },
 
     loadModel() {
+      if (this.isSceneReady) return; // Evita carregar o modelo mais de uma vez
+
       const loader = new GLTFLoader();
       const dracoLoader = new DRACOLoader();
       dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
@@ -93,15 +97,21 @@ export default {
         (gltf) => {
           this.model = markRaw(gltf.scene);
 
-          // Ajustes de rotação e posição
-          this.model.rotation.x = THREE.MathUtils.degToRad(0);
-          this.model.position.y = -1.4;
-          this.model.position.z = 0.2;
+          // Certifique-se de que o modelo é válido antes de adicionar à cena
+          if (this.model) {
+            // Ajustes de rotação e posição
+            this.model.rotation.x = THREE.MathUtils.degToRad(0);
+            this.model.position.y = -1.4;
+            this.model.position.z = 0.2;
 
-          this.scene.add(this.model);
+            this.scene.add(this.model);
+            this.isSceneReady = true; // Marca como carregado
+          } else {
+            console.error("Modelo carregado, mas não possui uma cena válida.");
+          }
         },
         undefined,
-        (error) => console.error("Error loading MacBook model:", error)
+        (error) => console.error("Erro ao carregar o modelo iPhone:", error)
       );
     },
 
@@ -111,7 +121,7 @@ export default {
       // Atualiza o monitor de recursos
       if (this.stats) this.stats.begin();
 
-      // Rotação contínua
+      // Rotação contínua do modelo
       if (this.model) {
         this.model.rotation.y += 0.005;
       }
@@ -125,9 +135,11 @@ export default {
 
     onWindowResize() {
       const container = this.$refs.container;
-      this.camera.aspect = container.clientWidth / container.clientHeight;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(container.clientWidth, container.clientHeight);
+      if (this.camera && this.renderer) {
+        this.camera.aspect = container.clientWidth / container.clientHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(container.clientWidth, container.clientHeight);
+      }
     },
 
     cleanUpScene() {
@@ -174,6 +186,12 @@ export default {
       if (this.scene) {
         this.scene.environment = null;
         this.scene.background = null;
+      }
+
+      // Descartar controles
+      if (this.controls) {
+        this.controls.dispose();
+        this.controls = null;
       }
 
       // Descartar renderer

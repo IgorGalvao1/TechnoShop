@@ -204,21 +204,55 @@ body {
   color: white;
   text-decoration: none;
   margin: 0 0.5rem;
+  transition: color 0.3s ease;
+}
+.header nav a:hover {
+  color: #007bff;
 }
 
 /* Seção Hero */
 .hero {
-  height: 100vh;
+  height: 110vh;
   background: linear-gradient(135deg, #333, #444);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  overflow: hidden;
+  position: relative;
 }
+
+.hero-model {
+  height: 500px;
+  width: 600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  overflow: hidden;
+  animation: fadeIn 1s ease-out;
+}
+
 .hero .container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+.hero-text {
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: fadeInDown 1s ease-out;
+}
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  animation: fadeInUp 1s ease-out;
 }
 .hero button {
   background: #007bff;
@@ -230,6 +264,24 @@ body {
   font-size: 1rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+.hero button:hover {
+  background: #0056b3;
+  transform: translateY(-5px);
+}
+
+/* Ícone de Redimensionamento */
+.icon-resize {
+  width: 40px;
+  height: 40px;
+  filter: brightness(0) invert(1);
+  animation: float 3s ease-in-out infinite;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 /* Seção Sobre */
@@ -240,6 +292,13 @@ body {
 }
 .about h2 {
   margin-bottom: 1rem;
+  animation: fadeIn 1s ease-out;
+}
+.about p {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  animation: fadeInUp 1s ease-out;
 }
 
 /* Seção Features */
@@ -247,6 +306,10 @@ body {
   padding: 4rem 1rem;
   background: #333;
   color: white;
+}
+.features h2 {
+  margin-bottom: 2rem;
+  animation: fadeIn 1s ease-out;
 }
 .features-grid {
   display: grid;
@@ -257,35 +320,36 @@ body {
   background: #444;
   padding: 2rem;
   border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.feature-item:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+.feature-item h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+.feature-item p {
+  font-size: 1rem;
+  color: #ddd;
 }
 
-.hero-model {
-  height: 500px;
-  width: 600px;
-  margin: 0 auto; /* Centraliza horizontalmente */
-  display: flex;
-  justify-content: center; /* Centraliza o conteúdo horizontalmente */
-  align-items: center; /* Centraliza o conteúdo verticalmente */
-  border-radius: 10px;
-  overflow: hidden;
-}
-
+/* Seção Produtos */
 .products {
   padding: 4rem 1rem;
   background: #f9f9f9;
   text-align: center;
 }
-
 .products h2 {
   margin-bottom: 2rem;
+  animation: fadeIn 1s ease-out;
 }
-
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
 }
-
 .product-card {
   background: #ffffff;
   border-radius: 10px;
@@ -295,24 +359,21 @@ body {
   padding: 1.5rem;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
 .product-card img {
   width: 60%;
   height: 400px;
   object-fit: cover;
   border-radius: 10px;
+  transition: transform 0.3s ease;
 }
-
 .product-card h3 {
   margin: 1rem 0;
   font-size: 1.5rem;
 }
-
 .product-card p {
   font-size: 1rem;
   color: #666;
 }
-
 .product-card .product-button {
   display: inline-block;
   margin-top: 1rem;
@@ -323,22 +384,58 @@ body {
   border-radius: 5px;
   transition: background 0.3s ease;
 }
-
 .product-card .product-button:hover {
   background: #0056b3;
 }
-
 .product-card:hover {
   transform: translateY(-10px);
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
-
-.icon-resize {
-  margin: 0 auto;
-
-  width: 30px; /* Ajuste o tamanho */
-  height: 30px;
-  filter: brightness(0) invert(1); /* Deixa o ícone branco */
+.product-card:hover img {
+  transform: scale(1.05);
 }
 
+/* Animações */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -10px);
+  }
+  100% {
+    transform: translate(-50%, 0);
+  }
+}
 </style>
