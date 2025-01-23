@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
   modules: [],
+  ssr: false,
   app: {
     head: {
       title: 'TechnoShop',
